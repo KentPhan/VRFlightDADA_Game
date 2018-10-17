@@ -31,11 +31,7 @@ public class PlayerEntity : MonoBehaviour
 
         }
 
-
         this.m_RigidBody.MovePosition(transform.position + transform.forward * ConstantForwardSpeed * Time.deltaTime);
-        Debug.Log(transform.forward);
-
-
     }
 
 
