@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.XR;
 
 namespace Assets.Scripts.Entities
 {
@@ -28,8 +29,15 @@ namespace Assets.Scripts.Entities
         // Update is called once per frame
         void Update()
         {
-            //Vector3 l_leftPosition = InputTracking.GetLocalPosition((XRNode.LeftHand));
-            //Vector3 l_rightPosition = InputTracking.GetLocalPosition((XRNode.RightHand));
+
+            string[] test = UnityEngine.Input.GetJoystickNames();
+
+            Vector3 l_leftPosition = InputTracking.GetLocalPosition((XRNode.LeftHand));
+
+            Vector3 l_rightPosition = InputTracking.GetLocalPosition((XRNode.RightHand));
+
+            Debug.Log(l_leftPosition);
+            Debug.Log(l_rightPosition);
 
             if (Input.GetButtonDown("Flap"))
             {
@@ -38,6 +46,11 @@ namespace Assets.Scripts.Entities
             }
 
             this.m_RigidBody.MovePosition(transform.position + transform.forward * ConstantForwardSpeed * Time.deltaTime);
+        }
+
+        public void MovePlayer(float flapForce)
+        {
+            this.m_RigidBody.AddForce(Vector3.up * this.MaxFlapForce, ForceMode.Impulse);
         }
 
 
