@@ -17,7 +17,7 @@ namespace Assets.Scripts.Entities
     {
         public float MaxFlapForce = 10.0f;
         public float ConstantForwardSpeed = 10.0f;
-
+        public float rotateValue = 500f;
 
         public ControllerState CurrentControllerState = ControllerState.Keyboard;
         [Header("Keyboard")]
@@ -99,9 +99,18 @@ namespace Assets.Scripts.Entities
                 // If going up, update left position higher
                 if (Vector3.Dot(lDirection, Vector3.up) > 0)
                 {
-
-                    if (m_LeftThresholdReached)
+                    //If only one arm is flapping
+                    if (m_LeftThresholdReached && !m_RightThresholdReached)
                     {
+                        RotateLeft();
+                        //ApplyLift();
+                        m_AnchorPositionLeft = l_leftPosition;
+                        m_LeftThresholdReached = false;
+                    }
+                    //both the arms are flapping
+                    if (m_LeftThresholdReached && m_RightThresholdReached)
+                    {
+                        //RotateLeft();
                         ApplyLift();
                         m_AnchorPositionLeft = l_leftPosition;
                         m_LeftThresholdReached = false;
@@ -116,7 +125,7 @@ namespace Assets.Scripts.Entities
                 {
                     //Debug.Log("Going Down Bitch" + direction.magnitude);
                     Vector3 distanceFromAnchor = m_AnchorPositionLeft - l_leftPosition;
-                    Debug.Log(m_AnchorPositionLeft + " " + l_leftPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
+                   // Debug.Log(m_AnchorPositionLeft + " " + l_leftPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
                     if (distanceFromAnchor.magnitude > MinimumArmSwitchDistance)
                     {
                         m_LeftThresholdReached = true;
@@ -127,12 +136,23 @@ namespace Assets.Scripts.Entities
 
 
                 // Right Arm
-                Vector3 rDirection = l_leftPosition - m_PreviousRightPosition;
+                Vector3 rDirection = l_rightPosition - m_PreviousRightPosition;
                 if (Vector3.Dot(rDirection, Vector3.up) > 0)
                 {
-
-                    if (m_RightThresholdReached)
+                    //Only right arm is flapping
+                    if (m_RightThresholdReached && !m_LeftThresholdReached)
                     {
+                       
+                        RotateRight();
+                        //ApplyLift();
+                        m_AnchorPositionRight = l_rightPosition;
+                        m_RightThresholdReached = false;
+                    }
+                    //both the arms are flapping
+                    if (m_RightThresholdReached && m_LeftThresholdReached)
+                    {
+
+                        //RotateRight();
                         ApplyLift();
                         m_AnchorPositionRight = l_rightPosition;
                         m_RightThresholdReached = false;
@@ -146,7 +166,7 @@ namespace Assets.Scripts.Entities
                 else
                 {
                     Vector3 distanceFromAnchor = m_AnchorPositionRight - l_rightPosition;
-                    Debug.Log(m_AnchorPositionRight + " " + l_rightPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
+                    //Debug.Log(m_AnchorPositionRight + " " + l_rightPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
                     if (distanceFromAnchor.magnitude > MinimumArmSwitchDistance)
                     {
                         m_RightThresholdReached = true;
@@ -161,14 +181,27 @@ namespace Assets.Scripts.Entities
                 ApplyLift();
             }
 
-            this.m_RigidBody.MovePosition(transform.position + transform.forward * ConstantForwardSpeed * Time.deltaTime);
+            //this.m_RigidBody.MovePosition(transform.position + transform.forward * ConstantForwardSpeed * Time.deltaTime);
         }
 
 
 
         public void ApplyLift()
         {
+            this.m_RigidBody.useGravity = true;
             this.m_RigidBody.AddForce(Vector3.up * this.MaxFlapForce, ForceMode.Impulse);
+        }
+
+        public void RotateRight()
+        {
+            Debug.Log("Rotating player " + transform.localRotation);
+            transform.Rotate(0, rotateValue * Time.deltaTime, 0, Space.World);
+        }
+
+        public void RotateLeft()
+        {
+            Debug.Log("Rotating player " + transform.localRotation);
+            transform.Rotate(0,rotateValue * Time.deltaTime, 0, Space.World);
         }
 
 

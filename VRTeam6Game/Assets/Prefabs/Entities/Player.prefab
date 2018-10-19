@@ -1044,7 +1044,7 @@ MonoBehaviour:
   ConstantForwardSpeed: 10
   CurrentControllerState: 1
   KeyboardRotationSpeed: 1
-  MinimumArmSwitchDistance: 0
+  MinimumArmSwitchDistance: 0.3
 --- !u!114 &114653027596580962
 MonoBehaviour:
   m_ObjectHideFlags: 1
