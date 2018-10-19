@@ -164,14 +164,13 @@ namespace Assets.Scripts.Entities
             this.m_RigidBody.MovePosition(transform.position + transform.forward * ConstantForwardSpeed * Time.deltaTime);
         }
 
-<<<<<<< HEAD
-       
-=======
+
+
         public void ApplyLift()
         {
             this.m_RigidBody.AddForce(Vector3.up * this.MaxFlapForce, ForceMode.Impulse);
         }
->>>>>>> f360900e4fab9ac112c6ca06d5ca91b715809096
+
 
 
     }
