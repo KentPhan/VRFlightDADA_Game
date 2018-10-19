@@ -40,6 +40,8 @@ namespace Assets.Scripts.Entities
             this.m_RigidBody.MovePosition(transform.position + transform.forward * ConstantForwardSpeed * Time.deltaTime);
         }
 
+       
+
 
     }
 
