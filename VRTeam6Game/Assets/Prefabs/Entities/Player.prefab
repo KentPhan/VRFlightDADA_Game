@@ -355,6 +355,7 @@ GameObject:
   - component: {fileID: 114424120959012994}
   - component: {fileID: 114180499525587354}
   - component: {fileID: 114827454524891230}
+  - component: {fileID: 114360773364413566}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -906,6 +907,18 @@ MonoBehaviour:
   teleportMarker: {fileID: 1503526479864244, guid: 10d95b99055c6ad40b735cc8b3593745,
     type: 2}
   useCustomMapping: 0
+--- !u!114 &114360773364413566
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1937880031610394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aebab3047f2113489ca3eb8423228b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Canvas: {fileID: 223476597002234374}
 --- !u!114 &114424120959012994
 MonoBehaviour:
   m_ObjectHideFlags: 1

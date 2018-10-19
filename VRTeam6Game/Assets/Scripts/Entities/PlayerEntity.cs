@@ -102,14 +102,15 @@ namespace Assets.Scripts.Entities
 
                 // Left Arm
                 Vector3 direction = l_leftPosition - m_PreviousLeftPosition;
+                //Debug.Log("Anchor Position:" + m_AnchorPositionLeft);
+
 
                 // If going up, update left position higher
                 if (Vector3.Dot(direction, Vector3.up) > 0)
                 {
-                    //Debug.Log("Going Up Bitch" + m_AnchorPositionLeft);
+
                     if (m_LeftThresholdReached)
                     {
-                        Debug.Log("WE GOING PLACES");
                         ApplyLift();
                         m_AnchorPositionLeft = l_leftPosition;
                         m_LeftThresholdReached = false;
@@ -123,30 +124,44 @@ namespace Assets.Scripts.Entities
                 else
                 {
                     //Debug.Log("Going Down Bitch" + direction.magnitude);
-                    Debug.Log("Going Down Bitch" + direction.magnitude);
-                    if (direction.magnitude > MinimumArmSwitchDistance)
+                    Vector3 distanceFromAnchor = m_AnchorPositionLeft - l_leftPosition;
+                    Debug.Log(m_AnchorPositionLeft + " " + l_leftPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
+                    if (distanceFromAnchor.magnitude > MinimumArmSwitchDistance)
                     {
                         m_LeftThresholdReached = true;
                     }
                 }
-
                 m_PreviousLeftPosition = l_leftPosition;
 
 
 
+                // Right Arm
+                if (Vector3.Dot(direction, Vector3.up) > 0)
+                {
 
+                    if (m_RightThresholdReached)
+                    {
+                        ApplyLift();
+                        m_AnchorPositionRight = l_rightPosition;
+                        m_RightThresholdReached = false;
+                    }
+                    else
+                    {
+                        m_AnchorPositionRight = l_rightPosition;
+                    }
+                }
+                // If going down
+                else
+                {
+                    Vector3 distanceFromAnchor = m_AnchorPositionRight - l_rightPosition;
+                    Debug.Log(m_AnchorPositionRight + " " + l_rightPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
+                    if (distanceFromAnchor.magnitude > MinimumArmSwitchDistance)
+                    {
+                        m_RightThresholdReached = true;
+                    }
+                }
+                m_PreviousRightPosition = l_rightPosition;
 
-
-
-                //// Right Arm
-                //if (m_CurrentRightArmState == ArmState.Up)
-                //{
-
-                //}
-                //else
-                //{
-
-                //}
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
