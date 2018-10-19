@@ -3,13 +3,6 @@ using UnityEngine.XR;
 
 namespace Assets.Scripts.Entities
 {
-    public enum ArmState
-    {
-        Up,
-        Down,
-        None
-    }
-
     public enum ControllerState
     {
         Keyboard,
@@ -40,8 +33,7 @@ namespace Assets.Scripts.Entities
         private Vector3 m_PreviousLeftPosition;
         private Vector3 m_PreviousRightPosition;
 
-        private ArmState m_CurrentLeftArmState = ArmState.Up;
-        private ArmState m_CurrentRightArmState = ArmState.Up;
+
 
         private bool m_LeftThresholdReached = false;
         private bool m_RightThresholdReached = false;
@@ -101,12 +93,11 @@ namespace Assets.Scripts.Entities
 
 
                 // Left Arm
-                Vector3 direction = l_leftPosition - m_PreviousLeftPosition;
-                //Debug.Log("Anchor Position:" + m_AnchorPositionLeft);
+                Vector3 lDirection = l_leftPosition - m_PreviousLeftPosition;
 
 
                 // If going up, update left position higher
-                if (Vector3.Dot(direction, Vector3.up) > 0)
+                if (Vector3.Dot(lDirection, Vector3.up) > 0)
                 {
 
                     if (m_LeftThresholdReached)
@@ -136,7 +127,8 @@ namespace Assets.Scripts.Entities
 
 
                 // Right Arm
-                if (Vector3.Dot(direction, Vector3.up) > 0)
+                Vector3 rDirection = l_leftPosition - m_PreviousRightPosition;
+                if (Vector3.Dot(rDirection, Vector3.up) > 0)
                 {
 
                     if (m_RightThresholdReached)
