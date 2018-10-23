@@ -94,23 +94,76 @@ namespace Assets.Scripts.Entities
 
                 // Left Arm
                 Vector3 lDirection = l_leftPosition - m_PreviousLeftPosition;
+                // Right Arm
+                Vector3 rDirection = l_rightPosition - m_PreviousRightPosition;
 
 
-                // If going up, update left position higher
+                // Left Arm Threshold Check
+                if (Vector3.Dot(lDirection, Vector3.up) > 0)
+                {
+
+                }
+                else
+                {
+                    //Debug.Log("Going Down Bitch" + direction.magnitude);
+                    Vector3 distanceFromAnchor = m_AnchorPositionLeft - l_leftPosition;
+                    // Debug.Log(m_AnchorPositionLeft + " " + l_leftPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
+                    m_LeftThresholdReached = (distanceFromAnchor.magnitude > MinimumArmSwitchDistance);
+                }
+
+                // Right Arm Threshold Check
+                if (Vector3.Dot(rDirection, Vector3.up) > 0)
+                {
+
+                }
+                else
+                {
+                    Vector3 distanceFromAnchor = m_AnchorPositionRight - l_rightPosition;
+                    //Debug.Log(m_AnchorPositionRight + " " + l_rightPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
+                    m_RightThresholdReached = (distanceFromAnchor.magnitude > MinimumArmSwitchDistance);
+                }
+
+                //check if both arms have reached threshold
+                if (m_RightThresholdReached && m_LeftThresholdReached)
+                {
+                    ApplyLift();
+                    m_LeftThresholdReached = false;
+                    m_RightThresholdReached = false;
+                    //m_AnchorPositionRight = l_rightPosition;
+                    //m_RightThresholdReached = false;
+                }
+                //check if one arm is flapping and that is left
+                else if (m_LeftThresholdReached && !m_RightThresholdReached)
+                {
+                    RotateLeft();
+                    m_AnchorPositionLeft = l_leftPosition;
+                    m_LeftThresholdReached = false;
+                }
+                //check if one arm is flapping and that is right
+                else if (m_RightThresholdReached && !m_LeftThresholdReached)
+                {
+
+                    RotateRight();
+                    m_AnchorPositionRight = l_rightPosition;
+                    m_RightThresholdReached = false;
+                }
+
+                m_LeftThresholdReached = false;
+                m_RightThresholdReached = false;
+
+                // Left Arm Lift and Rotation Application
                 if (Vector3.Dot(lDirection, Vector3.up) > 0)
                 {
                     //If only one arm is flapping
                     if (m_LeftThresholdReached && !m_RightThresholdReached)
                     {
                         RotateLeft();
-                        //ApplyLift();
                         m_AnchorPositionLeft = l_leftPosition;
                         m_LeftThresholdReached = false;
                     }
                     //both the arms are flapping
-                    if (m_LeftThresholdReached && m_RightThresholdReached)
+                    else if (m_LeftThresholdReached && m_RightThresholdReached)
                     {
-                        //RotateLeft();
                         ApplyLift();
                         m_AnchorPositionLeft = l_leftPosition;
                         m_LeftThresholdReached = false;
@@ -119,40 +172,29 @@ namespace Assets.Scripts.Entities
                     {
                         m_AnchorPositionLeft = l_leftPosition;
                     }
+                    m_AnchorPositionLeft = l_leftPosition;
                 }
                 // If going down
                 else
                 {
-                    //Debug.Log("Going Down Bitch" + direction.magnitude);
-                    Vector3 distanceFromAnchor = m_AnchorPositionLeft - l_leftPosition;
-                   // Debug.Log(m_AnchorPositionLeft + " " + l_leftPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
-                    if (distanceFromAnchor.magnitude > MinimumArmSwitchDistance)
-                    {
-                        m_LeftThresholdReached = true;
-                    }
+
                 }
-                m_PreviousLeftPosition = l_leftPosition;
 
 
-
-                // Right Arm
-                Vector3 rDirection = l_rightPosition - m_PreviousRightPosition;
+                // Right Arm Lift and Rotation Application
                 if (Vector3.Dot(rDirection, Vector3.up) > 0)
                 {
                     //Only right arm is flapping
                     if (m_RightThresholdReached && !m_LeftThresholdReached)
                     {
-                       
+
                         RotateRight();
-                        //ApplyLift();
                         m_AnchorPositionRight = l_rightPosition;
                         m_RightThresholdReached = false;
                     }
                     //both the arms are flapping
-                    if (m_RightThresholdReached && m_LeftThresholdReached)
+                    else if (m_RightThresholdReached && m_LeftThresholdReached)
                     {
-
-                        //RotateRight();
                         ApplyLift();
                         m_AnchorPositionRight = l_rightPosition;
                         m_RightThresholdReached = false;
@@ -161,47 +203,44 @@ namespace Assets.Scripts.Entities
                     {
                         m_AnchorPositionRight = l_rightPosition;
                     }
+                    m_AnchorPositionRight = l_rightPosition;
                 }
                 // If going down
                 else
                 {
-                    Vector3 distanceFromAnchor = m_AnchorPositionRight - l_rightPosition;
-                    //Debug.Log(m_AnchorPositionRight + " " + l_rightPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
-                    if (distanceFromAnchor.magnitude > MinimumArmSwitchDistance)
-                    {
-                        m_RightThresholdReached = true;
-                    }
+
                 }
+
+
+                // Update Next positions to calculate with
+                m_PreviousLeftPosition = l_leftPosition;
                 m_PreviousRightPosition = l_rightPosition;
 
             }
+            // Move Forward with constant speed
+            this.m_RigidBody.MovePosition(transform.position +
+                                              transform.forward * ConstantForwardSpeed * Time.deltaTime);
 
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                ApplyLift();
-            }
 
-            //this.m_RigidBody.MovePosition(transform.position + transform.forward * ConstantForwardSpeed * Time.deltaTime);
         }
-
-
 
         public void ApplyLift()
         {
+            Debug.Log("Going up");
             this.m_RigidBody.useGravity = true;
             this.m_RigidBody.AddForce(Vector3.up * this.MaxFlapForce, ForceMode.Impulse);
         }
 
         public void RotateRight()
         {
-            Debug.Log("Rotating player " + transform.localRotation);
+            Debug.Log("Rotating player Right" + transform.localRotation);
             transform.Rotate(0, rotateValue * Time.deltaTime, 0, Space.World);
         }
 
         public void RotateLeft()
         {
-            Debug.Log("Rotating player " + transform.localRotation);
-            transform.Rotate(0,rotateValue * Time.deltaTime, 0, Space.World);
+            Debug.Log("Rotating player left" + transform.localRotation);
+            transform.Rotate(0, -1 * rotateValue * Time.deltaTime, 0, Space.World);
         }
 
 
