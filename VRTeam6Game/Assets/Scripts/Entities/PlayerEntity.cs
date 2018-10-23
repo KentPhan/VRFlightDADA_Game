@@ -158,36 +158,6 @@ namespace Assets.Scripts.Entities
                 }
 
 
-                //if (m_RightThresholdReached && m_LeftThresholdReached)
-                //{
-                //    ApplyLift();
-                //    m_LeftThresholdReached = false;
-                //    m_RightThresholdReached = false;
-                //    //m_AnchorPositionRight = l_rightPosition;
-                //    //m_RightThresholdReached = false;
-                //}
-                ////check if one arm is flapping and that is left
-                //else if (m_LeftThresholdReached && !m_RightThresholdReached)
-                //{
-                //    RotateLeft();
-                //    m_AnchorPositionLeft = l_leftPosition;
-                //    m_LeftThresholdReached = false;
-                //}
-                ////check if one arm is flapping and that is right
-                //else if (m_RightThresholdReached && !m_LeftThresholdReached)
-                //{
-
-                //    RotateRight();
-                //    m_AnchorPositionRight = l_rightPosition;
-                //    m_RightThresholdReached = false;
-                //}
-
-                //m_LeftThresholdReached = false;
-                //m_RightThresholdReached = false;
-
-
-
-
                 // Update Next positions to calculate with
                 m_PreviousLeftPosition = l_leftPosition;
                 m_PreviousRightPosition = l_rightPosition;
@@ -196,8 +166,6 @@ namespace Assets.Scripts.Entities
             // Move Forward with constant speed
             this.m_RigidBody.MovePosition(transform.position +
                                               transform.forward * ConstantForwardSpeed * Time.deltaTime);
-
-
         }
 
         public void ApplyLift()
