@@ -15,19 +15,24 @@ namespace Assets.Scripts.Entities
     /// <seealso cref="UnityEngine.MonoBehaviour" />
     public class PlayerEntity : MonoBehaviour
     {
-        public float MaxFlapForce = 10.0f;
-        public float ConstantForwardSpeed = 10.0f;
-        public float rotateValue = 500f;
 
-        public ControllerState CurrentControllerState = ControllerState.VR_Flap_Turn;
-        [Header("VR Flap Turn")]
+
+
+        [Header("Arm Flapping measurements of input detection")]
+        public float MaxFlapForce = 10.0f;
         public float MinimumArmSwitchDistance = 2.0f; // minimum distance required to switch direction and have an effect
         public float MinimumArmFlapDistance = 4.0f;
 
+        public ControllerState CurrentControllerState = ControllerState.VR_Flap_Turn;
+        [Header("VR Flap Turn")]
+        public float ConstantForwardSpeed = 10.0f;
+        public float rotateValue = 500f;
 
         [Header("VR Head Turn")]
-
-
+        public float ForwardAcceleration = 20.0f;
+        [Range(0.0f, 1.0f)]
+        public float TriggerThreshold = 0.3f;
+        public float MaxVelocity = 20.0f;
 
         // Arm Detection
         private Vector3 m_AnchorPositionLeft;
@@ -52,15 +57,12 @@ namespace Assets.Scripts.Entities
         void Update()
         {
 
-
-
-            // Doesn't work right now
+            // For turn by swing, and detecing flap force
             if (this.CurrentControllerState == ControllerState.VR_Flap_Turn || this.CurrentControllerState == ControllerState.VR_Head_Turn)
             {
 
                 Vector3 l_leftPosition = InputTracking.GetLocalPosition((XRNode.LeftHand));
                 Vector3 l_rightPosition = InputTracking.GetLocalPosition((XRNode.RightHand));
-
 
                 if (m_AnchorPositionLeft == null)
                 {
@@ -142,10 +144,14 @@ namespace Assets.Scripts.Entities
             }
 
             // Use head to turn instead
-            Debug.Log("ParentRotation:" + transform.forward + "  CameraRotation:" + m_Camera.transform.forward);
+            //Debug.Log("ParentRotation:" + transform.forward + "  CameraRotation:" + m_Camera.transform.forward);
             if (this.CurrentControllerState == ControllerState.VR_Head_Turn)
             {
-                Vector3 forward = m_Camera.transform.forward;
+                float l_leftTriggerAxis = Input.GetAxis("CONTROLLER_LEFT_TRIGGER");
+                float l_rightTriggerAxis = Input.GetAxis("CONTROLLER_RIGHT_TRIGGER");
+
+
+                // Rotation logic I want to figure out so i can understand quaternions better
                 //transform.rotation = m_Camera.transform.localRotation;
                 //transform.rotation = Quaternion.Euler(transform.rotation, m_Camera.transform.rotation, 360.0f);
                 //m_Camera.transform
@@ -153,17 +159,30 @@ namespace Assets.Scripts.Entities
                 //// Move Forward with constant speed
                 //this.m_RigidBody.MovePosition(transform.position +
                 //                              transform.forward * ConstantForwardSpeed * Time.deltaTime);
-
-
                 //    .rotation; //Quaternion.LookRotation(new Vector3(m_Camera.transform.rotation.eulerAngles.x, m_Camera.transform.rotation.eulerAngles.y, m_Camera.transform.rotation.eulerAngles.z), transform.up);
-                this.m_RigidBody.MovePosition(transform.position +
-                                              new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) * ConstantForwardSpeed * Time.deltaTime);
+
+                //this.m_RigidBody.MovePosition(transform.position +
+                //                              new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) // Direction on x,z plane
+                //                              * ConstantForwardSpeed // Speed
+                //                              * Time.deltaTime);
+
+                if (l_leftTriggerAxis >= TriggerThreshold && l_rightTriggerAxis >= TriggerThreshold)
+                {
+                    float averagePower = (l_leftTriggerAxis + l_rightTriggerAxis) / 2.0f;
+
+                    this.m_RigidBody.AddForce(new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) // Direction on x,z plane
+                                              * ForwardAcceleration * averagePower // Speed
+                                              * Time.deltaTime, ForceMode.Acceleration);
+                }
+                this.m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, MaxVelocity);
+
+                //Debug.Log("Velocity" + this.m_RigidBody.velocity);
             }
             else
             {
                 // Move Forward with constant speed
                 this.m_RigidBody.MovePosition(transform.position +
-                                              transform.forward * ConstantForwardSpeed * Time.deltaTime);
+                                              m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
             }
         }
 
