@@ -25,6 +25,8 @@ namespace Assets.Scripts.Entities
         [Header("VR")]
         public float MinimumArmSwitchDistance = 2.0f; // minimum distance required to switch direction and have an effect
 
+        public float MinimumArmFlapDistance = 4.0f;
+
 
 
         // Arm Detection
@@ -97,119 +99,93 @@ namespace Assets.Scripts.Entities
                 // Right Arm
                 Vector3 rDirection = l_rightPosition - m_PreviousRightPosition;
 
+                float l_LdistanceFromAnchor = (m_AnchorPositionLeft - l_leftPosition).magnitude;
+                float l_RdistanceFromAnchor = (m_AnchorPositionRight - l_rightPosition).magnitude;
+
+
+                Debug.Log(l_leftPosition);
 
                 // Left Arm Threshold Check
                 if (Vector3.Dot(lDirection, Vector3.up) > 0)
                 {
-
+                    m_AnchorPositionLeft = l_leftPosition;
                 }
                 else
                 {
-                    //Debug.Log("Going Down Bitch" + direction.magnitude);
-                    Vector3 distanceFromAnchor = m_AnchorPositionLeft - l_leftPosition;
-                    // Debug.Log(m_AnchorPositionLeft + " " + l_leftPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
-                    m_LeftThresholdReached = (distanceFromAnchor.magnitude > MinimumArmSwitchDistance);
+                    m_LeftThresholdReached = (l_LdistanceFromAnchor > MinimumArmSwitchDistance);
                 }
 
                 // Right Arm Threshold Check
                 if (Vector3.Dot(rDirection, Vector3.up) > 0)
                 {
-
+                    m_AnchorPositionRight = l_rightPosition;
                 }
                 else
                 {
-                    Vector3 distanceFromAnchor = m_AnchorPositionRight - l_rightPosition;
-                    //Debug.Log(m_AnchorPositionRight + " " + l_rightPosition + " Distance From Anchor" + distanceFromAnchor.magnitude);
-                    m_RightThresholdReached = (distanceFromAnchor.magnitude > MinimumArmSwitchDistance);
+                    m_RightThresholdReached = (l_RdistanceFromAnchor > MinimumArmSwitchDistance);
                 }
+
 
                 //check if both arms have reached threshold
-                if (m_RightThresholdReached && m_LeftThresholdReached)
-                {
-                    ApplyLift();
-                    m_LeftThresholdReached = false;
-                    m_RightThresholdReached = false;
-                    //m_AnchorPositionRight = l_rightPosition;
-                    //m_RightThresholdReached = false;
-                }
-                //check if one arm is flapping and that is left
-                else if (m_LeftThresholdReached && !m_RightThresholdReached)
-                {
-                    RotateLeft();
-                    m_AnchorPositionLeft = l_leftPosition;
-                    m_LeftThresholdReached = false;
-                }
-                //check if one arm is flapping and that is right
-                else if (m_RightThresholdReached && !m_LeftThresholdReached)
+                if (l_LdistanceFromAnchor > MinimumArmFlapDistance || l_RdistanceFromAnchor > MinimumArmFlapDistance)
                 {
 
-                    RotateRight();
-                    m_AnchorPositionRight = l_rightPosition;
-                    m_RightThresholdReached = false;
-                }
-
-                m_LeftThresholdReached = false;
-                m_RightThresholdReached = false;
-
-                // Left Arm Lift and Rotation Application
-                if (Vector3.Dot(lDirection, Vector3.up) > 0)
-                {
-                    //If only one arm is flapping
-                    if (m_LeftThresholdReached && !m_RightThresholdReached)
-                    {
-                        RotateLeft();
-                        m_AnchorPositionLeft = l_leftPosition;
-                        m_LeftThresholdReached = false;
-                    }
-                    //both the arms are flapping
-                    else if (m_LeftThresholdReached && m_RightThresholdReached)
+                    if (m_RightThresholdReached && m_LeftThresholdReached)
                     {
                         ApplyLift();
-                        m_AnchorPositionLeft = l_leftPosition;
                         m_LeftThresholdReached = false;
+                        m_RightThresholdReached = false;
+
+                        m_AnchorPositionLeft = l_leftPosition;
+                        m_AnchorPositionRight = l_rightPosition;
                     }
-                    else
+                    //check if one arm is flapping and that is left
+                    else if (m_LeftThresholdReached && !m_RightThresholdReached)
                     {
+                        RotateLeft();
+                        m_LeftThresholdReached = false;
                         m_AnchorPositionLeft = l_leftPosition;
                     }
-                    m_AnchorPositionLeft = l_leftPosition;
-                }
-                // If going down
-                else
-                {
-
-                }
-
-
-                // Right Arm Lift and Rotation Application
-                if (Vector3.Dot(rDirection, Vector3.up) > 0)
-                {
-                    //Only right arm is flapping
-                    if (m_RightThresholdReached && !m_LeftThresholdReached)
+                    //check if one arm is flapping and that is right
+                    else if (m_RightThresholdReached && !m_LeftThresholdReached)
                     {
 
                         RotateRight();
-                        m_AnchorPositionRight = l_rightPosition;
                         m_RightThresholdReached = false;
-                    }
-                    //both the arms are flapping
-                    else if (m_RightThresholdReached && m_LeftThresholdReached)
-                    {
-                        ApplyLift();
-                        m_AnchorPositionRight = l_rightPosition;
-                        m_RightThresholdReached = false;
-                    }
-                    else
-                    {
                         m_AnchorPositionRight = l_rightPosition;
                     }
-                    m_AnchorPositionRight = l_rightPosition;
-                }
-                // If going down
-                else
-                {
 
                 }
+
+
+                //if (m_RightThresholdReached && m_LeftThresholdReached)
+                //{
+                //    ApplyLift();
+                //    m_LeftThresholdReached = false;
+                //    m_RightThresholdReached = false;
+                //    //m_AnchorPositionRight = l_rightPosition;
+                //    //m_RightThresholdReached = false;
+                //}
+                ////check if one arm is flapping and that is left
+                //else if (m_LeftThresholdReached && !m_RightThresholdReached)
+                //{
+                //    RotateLeft();
+                //    m_AnchorPositionLeft = l_leftPosition;
+                //    m_LeftThresholdReached = false;
+                //}
+                ////check if one arm is flapping and that is right
+                //else if (m_RightThresholdReached && !m_LeftThresholdReached)
+                //{
+
+                //    RotateRight();
+                //    m_AnchorPositionRight = l_rightPosition;
+                //    m_RightThresholdReached = false;
+                //}
+
+                //m_LeftThresholdReached = false;
+                //m_RightThresholdReached = false;
+
+
 
 
                 // Update Next positions to calculate with

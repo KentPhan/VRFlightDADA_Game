@@ -28,7 +28,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1067433260388134
 GameObject:
   m_ObjectHideFlags: 1
@@ -356,6 +356,7 @@ GameObject:
   - component: {fileID: 114180499525587354}
   - component: {fileID: 114827454524891230}
   - component: {fileID: 114360773364413566}
+  - component: {fileID: 114171396595205428}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -843,6 +844,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FadeSharedMaterial: 0
+--- !u!114 &114171396595205428
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1937880031610394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aebab3047f2113489ca3eb8423228b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Canvas: {fileID: 223476597002234374}
 --- !u!114 &114180499525587354
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1040,11 +1053,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7774184613909aa4caba8f037528038f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxFlapForce: 200
-  ConstantForwardSpeed: 10
+  MaxFlapForce: 300
+  ConstantForwardSpeed: 20
+  rotateValue: 500
   CurrentControllerState: 1
   KeyboardRotationSpeed: 1
-  MinimumArmSwitchDistance: 0.3
+  MinimumArmSwitchDistance: 0.2
+  MinimumArmFlapDistance: 0.4
 --- !u!114 &114653027596580962
 MonoBehaviour:
   m_ObjectHideFlags: 1
