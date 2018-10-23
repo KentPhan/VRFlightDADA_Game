@@ -5,8 +5,8 @@ namespace Assets.Scripts.Entities
 {
     public enum ControllerState
     {
-        Keyboard,
-        VR
+        VR_Flap_Turn,
+        VR_Head_Turn
     }
 
     /// <summary>
@@ -19,13 +19,13 @@ namespace Assets.Scripts.Entities
         public float ConstantForwardSpeed = 10.0f;
         public float rotateValue = 500f;
 
-        public ControllerState CurrentControllerState = ControllerState.Keyboard;
-        [Header("Keyboard")]
-        public float KeyboardRotationSpeed = 100.0f;
-        [Header("VR")]
+        public ControllerState CurrentControllerState = ControllerState.VR_Flap_Turn;
+        [Header("VR Flap Turn")]
         public float MinimumArmSwitchDistance = 2.0f; // minimum distance required to switch direction and have an effect
-
         public float MinimumArmFlapDistance = 4.0f;
+
+
+        [Header("VR Head Turn")]
 
 
 
@@ -34,20 +34,18 @@ namespace Assets.Scripts.Entities
         private Vector3 m_AnchorPositionRight;
         private Vector3 m_PreviousLeftPosition;
         private Vector3 m_PreviousRightPosition;
-
-
-
         private bool m_LeftThresholdReached = false;
         private bool m_RightThresholdReached = false;
 
-
-        // Controller State
+        // Components
         private Rigidbody m_RigidBody;
+        private Camera m_Camera;
 
         // Use this for initialization
         void Start()
         {
             this.m_RigidBody = GetComponent<Rigidbody>();
+            this.m_Camera = GetComponentInChildren<Camera>();
         }
 
         // Update is called once per frame
@@ -57,24 +55,7 @@ namespace Assets.Scripts.Entities
 
 
             // Doesn't work right now
-            if (this.CurrentControllerState == ControllerState.Keyboard)
-            {
-                if (Input.GetKeyDown(KeyCode.LeftArrow))
-                {
-                    transform.Rotate(Vector3.up, KeyboardRotationSpeed * Time.deltaTime, Space.World);
-                }
-                else if (Input.GetKeyDown(KeyCode.RightArrow))
-                {
-                    transform.Rotate(Vector3.up, -1 * KeyboardRotationSpeed * Time.deltaTime, Space.World);
-                }
-
-                if (Input.GetButtonDown("Flap"))
-                {
-                    this.m_RigidBody.AddForce(Vector3.up * this.MaxFlapForce, ForceMode.Impulse);
-
-                }
-            }
-            else
+            if (this.CurrentControllerState == ControllerState.VR_Flap_Turn || this.CurrentControllerState == ControllerState.VR_Head_Turn)
             {
 
                 Vector3 l_leftPosition = InputTracking.GetLocalPosition((XRNode.LeftHand));
@@ -101,9 +82,6 @@ namespace Assets.Scripts.Entities
 
                 float l_LdistanceFromAnchor = (m_AnchorPositionLeft - l_leftPosition).magnitude;
                 float l_RdistanceFromAnchor = (m_AnchorPositionRight - l_rightPosition).magnitude;
-
-
-                Debug.Log(l_leftPosition);
 
                 // Left Arm Threshold Check
                 if (Vector3.Dot(lDirection, Vector3.up) > 0)
@@ -142,48 +120,66 @@ namespace Assets.Scripts.Entities
                     //check if one arm is flapping and that is left
                     else if (m_LeftThresholdReached && !m_RightThresholdReached)
                     {
-                        RotateLeft();
+                        if (this.CurrentControllerState == ControllerState.VR_Flap_Turn)
+                            RotateLeft();
                         m_LeftThresholdReached = false;
                         m_AnchorPositionLeft = l_leftPosition;
                     }
                     //check if one arm is flapping and that is right
                     else if (m_RightThresholdReached && !m_LeftThresholdReached)
                     {
-
-                        RotateRight();
+                        if (this.CurrentControllerState == ControllerState.VR_Flap_Turn)
+                            RotateRight();
                         m_RightThresholdReached = false;
                         m_AnchorPositionRight = l_rightPosition;
                     }
 
                 }
 
-
                 // Update Next positions to calculate with
                 m_PreviousLeftPosition = l_leftPosition;
                 m_PreviousRightPosition = l_rightPosition;
-
             }
-            // Move Forward with constant speed
-            this.m_RigidBody.MovePosition(transform.position +
+
+            // Use head to turn instead
+            Debug.Log("ParentRotation:" + transform.forward + "  CameraRotation:" + m_Camera.transform.forward);
+            if (this.CurrentControllerState == ControllerState.VR_Head_Turn)
+            {
+                Vector3 forward = m_Camera.transform.forward;
+                //transform.rotation = m_Camera.transform.localRotation;
+                //transform.rotation = Quaternion.Euler(transform.rotation, m_Camera.transform.rotation, 360.0f);
+                //m_Camera.transform
+
+                //// Move Forward with constant speed
+                //this.m_RigidBody.MovePosition(transform.position +
+                //                              transform.forward * ConstantForwardSpeed * Time.deltaTime);
+
+
+                //    .rotation; //Quaternion.LookRotation(new Vector3(m_Camera.transform.rotation.eulerAngles.x, m_Camera.transform.rotation.eulerAngles.y, m_Camera.transform.rotation.eulerAngles.z), transform.up);
+                this.m_RigidBody.MovePosition(transform.position +
+                                              new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) * ConstantForwardSpeed * Time.deltaTime);
+            }
+            else
+            {
+                // Move Forward with constant speed
+                this.m_RigidBody.MovePosition(transform.position +
                                               transform.forward * ConstantForwardSpeed * Time.deltaTime);
+            }
         }
 
         public void ApplyLift()
         {
-            Debug.Log("Going up");
             this.m_RigidBody.useGravity = true;
             this.m_RigidBody.AddForce(Vector3.up * this.MaxFlapForce, ForceMode.Impulse);
         }
 
         public void RotateRight()
         {
-            Debug.Log("Rotating player Right" + transform.localRotation);
             transform.Rotate(0, rotateValue * Time.deltaTime, 0, Space.World);
         }
 
         public void RotateLeft()
         {
-            Debug.Log("Rotating player left" + transform.localRotation);
             transform.Rotate(0, -1 * rotateValue * Time.deltaTime, 0, Space.World);
         }
 

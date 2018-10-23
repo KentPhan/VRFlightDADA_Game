@@ -6,5 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/KentTestScene.unity
-    guid: 2f660833b0a8bb44baee9f5dc22b1348
+    path: Assets/Free Island Collection/Scenes/Scene 2.unity
+    guid: 565db450102e511409619c0e510f2f11
