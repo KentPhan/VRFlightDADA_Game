@@ -48,12 +48,21 @@ namespace Assets.Scripts.Entities
         // Components
         private Rigidbody m_RigidBody;
         private Camera m_Camera;
+        private ParticleVariables m_Particles;
+
+
+        public void OnCollisionEnter()
+        {
+            Debug.Log("I Collided;");
+        }
 
         // Use this for initialization
         void Start()
         {
             this.m_RigidBody = GetComponent<Rigidbody>();
             this.m_Camera = GetComponentInChildren<Camera>();
+
+            this.m_Particles = GetComponentInChildren<ParticleVariables>();
         }
 
         // Update is called once per frame
@@ -188,9 +197,11 @@ namespace Assets.Scripts.Entities
                         this.m_RigidBody.velocity = new Vector3(m_Camera.transform.forward.normalized.x * MinimumForwardSpeed, this.m_RigidBody.velocity.y, m_Camera.transform.forward.normalized.z * MinimumForwardSpeed);
                     }
                 }
-                Debug.Log("Max Velocity:" + this.m_RigidBody.velocity.magnitude);
+
                 // limit max speed
                 this.m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, MaxSpeed);
+
+                //Debug.Log("Max Velocity:" + this.m_RigidBody.velocity.magnitude);
             }
             else
             {
