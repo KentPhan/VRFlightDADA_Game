@@ -29,10 +29,13 @@ namespace Assets.Scripts.Entities
         public float rotateValue = 500f;
 
         [Header("VR Head Turn")]
-        public float ForwardAcceleration = 20.0f;
+        public float MinimumForwardSpeed = 1.0f;
         [Range(0.0f, 1.0f)]
         public float TriggerThreshold = 0.3f;
-        public float MaxVelocity = 20.0f;
+        public float MaxAcceleration = 20.0f;
+        public float MaxSpeed = 20.0f;
+
+
 
         // Arm Detection
         private Vector3 m_AnchorPositionLeft;
@@ -166,17 +169,28 @@ namespace Assets.Scripts.Entities
                 //                              * ConstantForwardSpeed // Speed
                 //                              * Time.deltaTime);
 
+                // If triggers are pressed, accelerate relative to max acceleration and how depressed the triggers are
+                float acceleration = 0.0f;
                 if (l_leftTriggerAxis >= TriggerThreshold && l_rightTriggerAxis >= TriggerThreshold)
                 {
-                    float averagePower = (l_leftTriggerAxis + l_rightTriggerAxis) / 2.0f;
+                    acceleration = MaxAcceleration * ((l_leftTriggerAxis + l_rightTriggerAxis) / 2.0f);
 
                     this.m_RigidBody.AddForce(new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) // Direction on x,z plane
-                                              * ForwardAcceleration * averagePower // Speed
+                                              * acceleration // Speed
                                               * Time.deltaTime, ForceMode.Acceleration);
                 }
-                this.m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, MaxVelocity);
+                // If triggers are not pressed, set minimum velocity on x and z plane forward if not going too fast already
+                else
+                {
+                    if (new Vector3(m_RigidBody.velocity.x, 0.0f, m_RigidBody.velocity.z).magnitude < MinimumForwardSpeed)
+                    {
 
-                //Debug.Log("Velocity" + this.m_RigidBody.velocity);
+                        this.m_RigidBody.velocity = new Vector3(m_Camera.transform.forward.normalized.x * MinimumForwardSpeed, this.m_RigidBody.velocity.y, m_Camera.transform.forward.normalized.z * MinimumForwardSpeed);
+                    }
+                }
+                Debug.Log("Max Velocity:" + this.m_RigidBody.velocity.magnitude);
+                // limit max speed
+                this.m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, MaxSpeed);
             }
             else
             {
