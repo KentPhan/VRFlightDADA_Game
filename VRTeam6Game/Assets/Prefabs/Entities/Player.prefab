@@ -724,7 +724,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!65 &65269647818515916
 BoxCollider:
@@ -976,6 +976,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7774184613909aa4caba8f037528038f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentState: 1
   MaxFlapForce: 140
   MinimumArmSwitchDistance: 0.2
   MinimumArmFlapDistance: 0.3

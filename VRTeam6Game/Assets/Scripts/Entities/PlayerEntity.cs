@@ -9,6 +9,12 @@ namespace Assets.Scripts.Entities
         VR_Head_Turn
     }
 
+    public enum PlayerState
+    {
+        IN_UI,
+        GAMEPLAY
+    }
+
     /// <summary>
     /// Player Entity
     /// </summary>
@@ -17,7 +23,7 @@ namespace Assets.Scripts.Entities
     {
 
 
-
+        public PlayerState CurrentState = PlayerState.IN_UI;
         [Header("Arm Flapping measurements of input detection")]
         public float MaxFlapForce = 10.0f;
         public float MinimumArmSwitchDistance = 2.0f; // minimum distance required to switch direction and have an effect
@@ -61,16 +67,32 @@ namespace Assets.Scripts.Entities
         {
             this.m_RigidBody = GetComponent<Rigidbody>();
             this.m_Camera = GetComponentInChildren<Camera>();
-
             this.m_Particles = GetComponentInChildren<ParticleSystem>();
+
+            if (this.CurrentState == PlayerState.IN_UI)
+            {
+                SwitchToUIState();
+            }
+            else
+            {
+                SwitchToGamePlayState();
+            }
         }
 
         // Update is called once per frame
         void Update()
         {
+            if (this.CurrentState == PlayerState.IN_UI)
+            {
+
             //Used for checking collision - Hitesh
             //this.m_RigidBody.MovePosition(transform.position +
             //                                 m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
+
+                return;
+            }
+
+
 
             // For turn by swing, and detecing flap force
             if (this.CurrentControllerState == ControllerState.VR_Flap_Turn || this.CurrentControllerState == ControllerState.VR_Head_Turn)
@@ -233,7 +255,17 @@ namespace Assets.Scripts.Entities
             transform.Rotate(0, -1 * rotateValue * Time.deltaTime, 0, Space.World);
         }
 
+        public void SwitchToUIState()
+        {
+            this.m_Particles.gameObject.SetActive(false);
+            this.m_RigidBody.useGravity = false;
+        }
 
+        public void SwitchToGamePlayState()
+        {
+            this.m_Particles.gameObject.SetActive(true);
+            this.m_RigidBody.useGravity = true;
+        }
 
     }
 
