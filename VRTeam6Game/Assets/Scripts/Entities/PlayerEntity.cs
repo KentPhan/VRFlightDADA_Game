@@ -68,6 +68,9 @@ namespace Assets.Scripts.Entities
         // Update is called once per frame
         void Update()
         {
+            //Used for checking collision - Hitesh
+            //this.m_RigidBody.MovePosition(transform.position +
+            //                                 m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
 
             // For turn by swing, and detecing flap force
             if (this.CurrentControllerState == ControllerState.VR_Flap_Turn || this.CurrentControllerState == ControllerState.VR_Head_Turn)
@@ -203,7 +206,7 @@ namespace Assets.Scripts.Entities
                 ParticleSystem.EmissionModule module = this.m_Particles.emission;
                 module.rateOverTime = MaxParticleCount * (this.m_RigidBody.velocity.magnitude / MaxSpeed);
 
-                Debug.Log("Particle Count:" + module.rateOverTime);
+               Debug.Log("Particle Count:" + module.rateOverTime);
                 //Debug.Log("Max Velocity:" + this.m_RigidBody.velocity.magnitude);
             }
             else
