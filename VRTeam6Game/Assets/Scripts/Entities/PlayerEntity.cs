@@ -9,26 +9,40 @@ namespace Assets.Scripts.Entities
         VR_Head_Turn
     }
 
+    public enum PlayerState
+    {
+        IN_UI,
+        GAMEPLAY
+    }
+
     /// <summary>
     /// Player Entity
     /// </summary>
     /// <seealso cref="UnityEngine.MonoBehaviour" />
     public class PlayerEntity : MonoBehaviour
     {
-        public float MaxFlapForce = 10.0f;
-        public float ConstantForwardSpeed = 10.0f;
-        public float rotateValue = 500f;
 
-        public ControllerState CurrentControllerState = ControllerState.VR_Flap_Turn;
-        [Header("VR Flap Turn")]
+
+        public PlayerState CurrentState = PlayerState.IN_UI;
+        [Header("Arm Flapping measurements of input detection")]
+        public float MaxFlapForce = 10.0f;
         public float MinimumArmSwitchDistance = 2.0f; // minimum distance required to switch direction and have an effect
         public float MinimumArmFlapDistance = 4.0f;
 
+        public ControllerState CurrentControllerState = ControllerState.VR_Flap_Turn;
+        [Header("VR Flap Turn")]
+        public float ConstantForwardSpeed = 10.0f;
+        public float rotateValue = 500f;
 
         [Header("VR Head Turn")]
+        public float MinimumForwardSpeed = 1.0f;
+        [Range(0.0f, 1.0f)]
+        public float TriggerThreshold = 0.3f;
+        public float MaxAcceleration = 20.0f;
+        public float MaxSpeed = 20.0f;
+        public float MaxParticleCount = 100.0f;
 
-
-
+        [Header("VR Head Turn")]
         // Arm Detection
         private Vector3 m_AnchorPositionLeft;
         private Vector3 m_AnchorPositionRight;
@@ -40,27 +54,52 @@ namespace Assets.Scripts.Entities
         // Components
         private Rigidbody m_RigidBody;
         private Camera m_Camera;
+        private ParticleSystem m_Particles;
+
+
+        public void OnCollisionEnter()
+        {
+            Debug.Log("I Collided;");
+        }
 
         // Use this for initialization
         void Start()
         {
             this.m_RigidBody = GetComponent<Rigidbody>();
             this.m_Camera = GetComponentInChildren<Camera>();
+            this.m_Particles = GetComponentInChildren<ParticleSystem>();
+
+            if (this.CurrentState == PlayerState.IN_UI)
+            {
+                SwitchToUIState();
+            }
+            else
+            {
+                SwitchToGamePlayState();
+            }
         }
 
         // Update is called once per frame
         void Update()
         {
+            if (this.CurrentState == PlayerState.IN_UI)
+            {
+
+            //Used for checking collision - Hitesh
+            //this.m_RigidBody.MovePosition(transform.position +
+            //                                 m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
+
+                return;
+            }
 
 
 
-            // Doesn't work right now
+            // For turn by swing, and detecing flap force
             if (this.CurrentControllerState == ControllerState.VR_Flap_Turn || this.CurrentControllerState == ControllerState.VR_Head_Turn)
             {
 
                 Vector3 l_leftPosition = InputTracking.GetLocalPosition((XRNode.LeftHand));
                 Vector3 l_rightPosition = InputTracking.GetLocalPosition((XRNode.RightHand));
-
 
                 if (m_AnchorPositionLeft == null)
                 {
@@ -75,11 +114,11 @@ namespace Assets.Scripts.Entities
                 }
 
 
-                // Left Arm
+                // Get diretion
                 Vector3 lDirection = l_leftPosition - m_PreviousLeftPosition;
-                // Right Arm
                 Vector3 rDirection = l_rightPosition - m_PreviousRightPosition;
 
+                // Get distance from anchor
                 float l_LdistanceFromAnchor = (m_AnchorPositionLeft - l_leftPosition).magnitude;
                 float l_RdistanceFromAnchor = (m_AnchorPositionRight - l_rightPosition).magnitude;
 
@@ -142,10 +181,14 @@ namespace Assets.Scripts.Entities
             }
 
             // Use head to turn instead
-            Debug.Log("ParentRotation:" + transform.forward + "  CameraRotation:" + m_Camera.transform.forward);
+            //Debug.Log("ParentRotation:" + transform.forward + "  CameraRotation:" + m_Camera.transform.forward);
             if (this.CurrentControllerState == ControllerState.VR_Head_Turn)
             {
-                Vector3 forward = m_Camera.transform.forward;
+                float l_leftTriggerAxis = Input.GetAxis("CONTROLLER_LEFT_TRIGGER");
+                float l_rightTriggerAxis = Input.GetAxis("CONTROLLER_RIGHT_TRIGGER");
+
+
+                // Rotation logic I want to figure out so i can understand quaternions better
                 //transform.rotation = m_Camera.transform.localRotation;
                 //transform.rotation = Quaternion.Euler(transform.rotation, m_Camera.transform.rotation, 360.0f);
                 //m_Camera.transform
@@ -153,17 +196,46 @@ namespace Assets.Scripts.Entities
                 //// Move Forward with constant speed
                 //this.m_RigidBody.MovePosition(transform.position +
                 //                              transform.forward * ConstantForwardSpeed * Time.deltaTime);
-
-
                 //    .rotation; //Quaternion.LookRotation(new Vector3(m_Camera.transform.rotation.eulerAngles.x, m_Camera.transform.rotation.eulerAngles.y, m_Camera.transform.rotation.eulerAngles.z), transform.up);
-                this.m_RigidBody.MovePosition(transform.position +
-                                              new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) * ConstantForwardSpeed * Time.deltaTime);
+
+                //this.m_RigidBody.MovePosition(transform.position +
+                //                              new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) // Direction on x,z plane
+                //                              * ConstantForwardSpeed // Speed
+                //                              * Time.deltaTime);
+
+                // If triggers are pressed, accelerate relative to max acceleration and how depressed the triggers are
+                if (l_leftTriggerAxis >= TriggerThreshold && l_rightTriggerAxis >= TriggerThreshold)
+                {
+                    float acceleration = MaxAcceleration * ((l_leftTriggerAxis + l_rightTriggerAxis) / 2.0f);
+
+                    this.m_RigidBody.AddForce(new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) // Direction on x,z plane
+                                              * acceleration // Speed
+                                              * Time.deltaTime, ForceMode.Acceleration);
+                }
+                // If triggers are not pressed, set minimum velocity on x and z plane forward if not going too fast already
+                else
+                {
+                    if (new Vector3(m_RigidBody.velocity.x, 0.0f, m_RigidBody.velocity.z).magnitude < MinimumForwardSpeed)
+                    {
+                        this.m_RigidBody.velocity = new Vector3(m_Camera.transform.forward.normalized.x * MinimumForwardSpeed, this.m_RigidBody.velocity.y, m_Camera.transform.forward.normalized.z * MinimumForwardSpeed);
+                    }
+                }
+
+                // limit max speed
+                this.m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, MaxSpeed);
+
+
+                ParticleSystem.EmissionModule module = this.m_Particles.emission;
+                module.rateOverTime = MaxParticleCount * (this.m_RigidBody.velocity.magnitude / MaxSpeed);
+
+               Debug.Log("Particle Count:" + module.rateOverTime);
+                //Debug.Log("Max Velocity:" + this.m_RigidBody.velocity.magnitude);
             }
             else
             {
                 // Move Forward with constant speed
                 this.m_RigidBody.MovePosition(transform.position +
-                                              transform.forward * ConstantForwardSpeed * Time.deltaTime);
+                                              m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
             }
         }
 
@@ -183,7 +255,17 @@ namespace Assets.Scripts.Entities
             transform.Rotate(0, -1 * rotateValue * Time.deltaTime, 0, Space.World);
         }
 
+        public void SwitchToUIState()
+        {
+            this.m_Particles.gameObject.SetActive(false);
+            this.m_RigidBody.useGravity = false;
+        }
 
+        public void SwitchToGamePlayState()
+        {
+            this.m_Particles.gameObject.SetActive(true);
+            this.m_RigidBody.useGravity = true;
+        }
 
     }
 
