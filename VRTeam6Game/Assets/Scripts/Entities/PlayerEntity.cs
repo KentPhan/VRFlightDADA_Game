@@ -34,9 +34,9 @@ namespace Assets.Scripts.Entities
         public float TriggerThreshold = 0.3f;
         public float MaxAcceleration = 20.0f;
         public float MaxSpeed = 20.0f;
+        public float MaxParticleCount = 100.0f;
 
-
-
+        [Header("VR Head Turn")]
         // Arm Detection
         private Vector3 m_AnchorPositionLeft;
         private Vector3 m_AnchorPositionRight;
@@ -48,7 +48,7 @@ namespace Assets.Scripts.Entities
         // Components
         private Rigidbody m_RigidBody;
         private Camera m_Camera;
-        private ParticleVariables m_Particles;
+        private ParticleSystem m_Particles;
 
 
         public void OnCollisionEnter()
@@ -62,7 +62,7 @@ namespace Assets.Scripts.Entities
             this.m_RigidBody = GetComponent<Rigidbody>();
             this.m_Camera = GetComponentInChildren<Camera>();
 
-            this.m_Particles = GetComponentInChildren<ParticleVariables>();
+            this.m_Particles = GetComponentInChildren<ParticleSystem>();
         }
 
         // Update is called once per frame
@@ -89,11 +89,11 @@ namespace Assets.Scripts.Entities
                 }
 
 
-                // Left Arm
+                // Get diretion
                 Vector3 lDirection = l_leftPosition - m_PreviousLeftPosition;
-                // Right Arm
                 Vector3 rDirection = l_rightPosition - m_PreviousRightPosition;
 
+                // Get distance from anchor
                 float l_LdistanceFromAnchor = (m_AnchorPositionLeft - l_leftPosition).magnitude;
                 float l_RdistanceFromAnchor = (m_AnchorPositionRight - l_rightPosition).magnitude;
 
@@ -179,10 +179,9 @@ namespace Assets.Scripts.Entities
                 //                              * Time.deltaTime);
 
                 // If triggers are pressed, accelerate relative to max acceleration and how depressed the triggers are
-                float acceleration = 0.0f;
                 if (l_leftTriggerAxis >= TriggerThreshold && l_rightTriggerAxis >= TriggerThreshold)
                 {
-                    acceleration = MaxAcceleration * ((l_leftTriggerAxis + l_rightTriggerAxis) / 2.0f);
+                    float acceleration = MaxAcceleration * ((l_leftTriggerAxis + l_rightTriggerAxis) / 2.0f);
 
                     this.m_RigidBody.AddForce(new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) // Direction on x,z plane
                                               * acceleration // Speed
@@ -193,7 +192,6 @@ namespace Assets.Scripts.Entities
                 {
                     if (new Vector3(m_RigidBody.velocity.x, 0.0f, m_RigidBody.velocity.z).magnitude < MinimumForwardSpeed)
                     {
-
                         this.m_RigidBody.velocity = new Vector3(m_Camera.transform.forward.normalized.x * MinimumForwardSpeed, this.m_RigidBody.velocity.y, m_Camera.transform.forward.normalized.z * MinimumForwardSpeed);
                     }
                 }
@@ -201,6 +199,11 @@ namespace Assets.Scripts.Entities
                 // limit max speed
                 this.m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, MaxSpeed);
 
+
+                ParticleSystem.EmissionModule module = this.m_Particles.emission;
+                module.rateOverTime = MaxParticleCount * (this.m_RigidBody.velocity.magnitude / MaxSpeed);
+
+                Debug.Log("Particle Count:" + module.rateOverTime);
                 //Debug.Log("Max Velocity:" + this.m_RigidBody.velocity.magnitude);
             }
             else
