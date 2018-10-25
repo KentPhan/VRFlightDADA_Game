@@ -85,9 +85,9 @@ namespace Assets.Scripts.Entities
             if (this.CurrentState == PlayerState.IN_UI)
             {
 
-            //Used for checking collision - Hitesh
-            //this.m_RigidBody.MovePosition(transform.position +
-            //                                 m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
+                //Used for checking collision - Hitesh
+                //this.m_RigidBody.MovePosition(transform.position +
+                //                                 m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
 
                 return;
             }
@@ -228,8 +228,6 @@ namespace Assets.Scripts.Entities
                 ParticleSystem.EmissionModule module = this.m_Particles.emission;
                 module.rateOverTime = MaxParticleCount * (this.m_RigidBody.velocity.magnitude / MaxSpeed);
 
-               Debug.Log("Particle Count:" + module.rateOverTime);
-                //Debug.Log("Max Velocity:" + this.m_RigidBody.velocity.magnitude);
             }
             else
             {
