@@ -6,5 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Free Island Collection/Scenes/Scene 2.unity
-    guid: 565db450102e511409619c0e510f2f11
+    path: Assets/Scenes/FinalScenes/ExplorationScene.unity
+    guid: d03e5f92f89b66c4da11fe51d17e43fc
