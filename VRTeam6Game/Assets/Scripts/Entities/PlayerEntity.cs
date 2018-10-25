@@ -92,155 +92,136 @@ namespace Assets.Scripts.Entities
                 return;
             }
 
+            DetectSwing();
+            DetectAcceleration();
+
+            // limit max speed
+            this.m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, MaxSpeed);
+
+            // Particle effects emmit relative to velocity
+            ParticleSystem.EmissionModule module = this.m_Particles.emission;
+            module.rateOverTime = MaxParticleCount * (this.m_RigidBody.velocity.magnitude / MaxSpeed);
+        }
+
+        public void DetectSwing()
+        {
+            // Swing Detection ------------------------------------
+            Vector3 l_leftPosition = InputTracking.GetLocalPosition((XRNode.LeftHand));
+            Vector3 l_rightPosition = InputTracking.GetLocalPosition((XRNode.RightHand));
+
+            // Get direction of controllers moving
+            Vector3 lDirection = l_leftPosition - m_PreviousLeftPosition;
+            Vector3 rDirection = l_rightPosition - m_PreviousRightPosition;
+
+            // Get distance from anchor
+            float l_LdistanceFromAnchor = (m_AnchorPositionLeft - l_leftPosition).magnitude;
+            float l_RdistanceFromAnchor = (m_AnchorPositionRight - l_rightPosition).magnitude;
+
+            // Left Controller. If moving up: update anchor, If moving down: check it breaks the switch direction threshold
+            if (Vector3.Dot(lDirection, Vector3.up) > 0)
+                m_AnchorPositionLeft = l_leftPosition;
+            else
+                m_LeftThresholdReached = (l_LdistanceFromAnchor > MinimumArmSwitchDistance);
+
+            // Right Controller. If moving up: update anchor, If moving down: check it breaks the switch direction threshold
+            if (Vector3.Dot(rDirection, Vector3.up) > 0)
+                m_AnchorPositionRight = l_rightPosition;
+            else
+                m_RightThresholdReached = (l_RdistanceFromAnchor > MinimumArmSwitchDistance);
 
 
-            // For turn by swing, and detecing flap force
-            if (this.CurrentControllerState == ControllerState.VR_Flap_Turn || this.CurrentControllerState == ControllerState.VR_Head_Turn)
+            // If either arm 
+            if (l_LdistanceFromAnchor > MinimumArmFlapDistance || l_RdistanceFromAnchor > MinimumArmFlapDistance)
             {
 
-                Vector3 l_leftPosition = InputTracking.GetLocalPosition((XRNode.LeftHand));
-                Vector3 l_rightPosition = InputTracking.GetLocalPosition((XRNode.RightHand));
-
-                if (m_AnchorPositionLeft == null)
+                if (m_RightThresholdReached && m_LeftThresholdReached)
                 {
+                    ApplyLift();
+                    m_LeftThresholdReached = false;
+                    m_RightThresholdReached = false;
+
                     m_AnchorPositionLeft = l_leftPosition;
-                    m_PreviousLeftPosition = l_leftPosition;
-                }
-
-                if (m_AnchorPositionRight == null)
-                {
-                    m_AnchorPositionRight = l_rightPosition;
-                    m_PreviousRightPosition = l_rightPosition;
-                }
-
-
-                // Get diretion
-                Vector3 lDirection = l_leftPosition - m_PreviousLeftPosition;
-                Vector3 rDirection = l_rightPosition - m_PreviousRightPosition;
-
-                // Get distance from anchor
-                float l_LdistanceFromAnchor = (m_AnchorPositionLeft - l_leftPosition).magnitude;
-                float l_RdistanceFromAnchor = (m_AnchorPositionRight - l_rightPosition).magnitude;
-
-                // Left Arm Threshold Check
-                if (Vector3.Dot(lDirection, Vector3.up) > 0)
-                {
-                    m_AnchorPositionLeft = l_leftPosition;
-                }
-                else
-                {
-                    m_LeftThresholdReached = (l_LdistanceFromAnchor > MinimumArmSwitchDistance);
-                }
-
-                // Right Arm Threshold Check
-                if (Vector3.Dot(rDirection, Vector3.up) > 0)
-                {
                     m_AnchorPositionRight = l_rightPosition;
                 }
-                else
+                //check if one arm is flapping and that is left
+                else if (m_LeftThresholdReached && !m_RightThresholdReached)
                 {
-                    m_RightThresholdReached = (l_RdistanceFromAnchor > MinimumArmSwitchDistance);
+                    if (this.CurrentControllerState == ControllerState.VR_Flap_Turn)
+                        RotateLeft();
+                    m_LeftThresholdReached = false;
+                    m_AnchorPositionLeft = l_leftPosition;
+                }
+                //check if one arm is flapping and that is right
+                else if (m_RightThresholdReached && !m_LeftThresholdReached)
+                {
+                    if (this.CurrentControllerState == ControllerState.VR_Flap_Turn)
+                        RotateRight();
+                    m_RightThresholdReached = false;
+                    m_AnchorPositionRight = l_rightPosition;
                 }
 
-
-                //check if both arms have reached threshold
-                if (l_LdistanceFromAnchor > MinimumArmFlapDistance || l_RdistanceFromAnchor > MinimumArmFlapDistance)
-                {
-
-                    if (m_RightThresholdReached && m_LeftThresholdReached)
-                    {
-                        ApplyLift();
-                        m_LeftThresholdReached = false;
-                        m_RightThresholdReached = false;
-
-                        m_AnchorPositionLeft = l_leftPosition;
-                        m_AnchorPositionRight = l_rightPosition;
-                    }
-                    //check if one arm is flapping and that is left
-                    else if (m_LeftThresholdReached && !m_RightThresholdReached)
-                    {
-                        if (this.CurrentControllerState == ControllerState.VR_Flap_Turn)
-                            RotateLeft();
-                        m_LeftThresholdReached = false;
-                        m_AnchorPositionLeft = l_leftPosition;
-                    }
-                    //check if one arm is flapping and that is right
-                    else if (m_RightThresholdReached && !m_LeftThresholdReached)
-                    {
-                        if (this.CurrentControllerState == ControllerState.VR_Flap_Turn)
-                            RotateRight();
-                        m_RightThresholdReached = false;
-                        m_AnchorPositionRight = l_rightPosition;
-                    }
-
-                }
-
-                // Update Next positions to calculate with
-                m_PreviousLeftPosition = l_leftPosition;
-                m_PreviousRightPosition = l_rightPosition;
             }
 
-            // Use head to turn instead
-            //Debug.Log("ParentRotation:" + transform.forward + "  CameraRotation:" + m_Camera.transform.forward);
-            if (this.CurrentControllerState == ControllerState.VR_Head_Turn)
+            // Update Next positions to calculate with
+            m_PreviousLeftPosition = l_leftPosition;
+            m_PreviousRightPosition = l_rightPosition;
+        }
+
+
+        public void DetectAcceleration()
+        {
+            float l_leftTriggerAxis = Input.GetAxis("CONTROLLER_LEFT_TRIGGER");
+            float l_rightTriggerAxis = Input.GetAxis("CONTROLLER_RIGHT_TRIGGER");
+
+
+            // If triggers are pressed, accelerate relative to max acceleration and how depressed the triggers are
+            if (l_leftTriggerAxis >= TriggerThreshold && l_rightTriggerAxis >= TriggerThreshold)
             {
-                float l_leftTriggerAxis = Input.GetAxis("CONTROLLER_LEFT_TRIGGER");
-                float l_rightTriggerAxis = Input.GetAxis("CONTROLLER_RIGHT_TRIGGER");
+                float acceleration = MaxAcceleration * ((l_leftTriggerAxis + l_rightTriggerAxis) / 2.0f);
 
-
-                // Rotation logic I want to figure out so i can understand quaternions better
-                //transform.rotation = m_Camera.transform.localRotation;
-                //transform.rotation = Quaternion.Euler(transform.rotation, m_Camera.transform.rotation, 360.0f);
-                //m_Camera.transform
-
-                //// Move Forward with constant speed
-                //this.m_RigidBody.MovePosition(transform.position +
-                //                              transform.forward * ConstantForwardSpeed * Time.deltaTime);
-                //    .rotation; //Quaternion.LookRotation(new Vector3(m_Camera.transform.rotation.eulerAngles.x, m_Camera.transform.rotation.eulerAngles.y, m_Camera.transform.rotation.eulerAngles.z), transform.up);
-
-                //this.m_RigidBody.MovePosition(transform.position +
-                //                              new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) // Direction on x,z plane
-                //                              * ConstantForwardSpeed // Speed
-                //                              * Time.deltaTime);
-
-                // If triggers are pressed, accelerate relative to max acceleration and how depressed the triggers are
-                if (l_leftTriggerAxis >= TriggerThreshold && l_rightTriggerAxis >= TriggerThreshold)
+                // Accelerate in boat direction
+                if (CurrentControllerState == ControllerState.VR_Flap_Turn)
                 {
-                    float acceleration = MaxAcceleration * ((l_leftTriggerAxis + l_rightTriggerAxis) / 2.0f);
+                    this.m_RigidBody.AddForce(new Vector3(this.m_RigidBody.transform.forward.x, 0.0f, this.m_RigidBody.transform.forward.z) // Direction on x,z plane
+                                              * acceleration // Speed
+                                              * Time.deltaTime, ForceMode.Acceleration);
+                }
 
+                // Accelerate in head direction
+                else if (CurrentControllerState == ControllerState.VR_Head_Turn)
+                {
                     this.m_RigidBody.AddForce(new Vector3(m_Camera.transform.forward.x, 0.0f, m_Camera.transform.forward.z) // Direction on x,z plane
                                               * acceleration // Speed
                                               * Time.deltaTime, ForceMode.Acceleration);
                 }
-                // If triggers are not pressed, set minimum velocity on x and z plane forward if not going too fast already
-                else
+
+
+            }
+            // If triggers are not pressed, set minimum velocity on x and z plane forward if not going too fast already
+            else
+            {
+                // If going slow then minimum speed
+                if (new Vector3(m_RigidBody.velocity.x, 0.0f, m_RigidBody.velocity.z).magnitude < MinimumForwardSpeed)
                 {
-                    if (new Vector3(m_RigidBody.velocity.x, 0.0f, m_RigidBody.velocity.z).magnitude < MinimumForwardSpeed)
+
+                    // Minimum constant velocity in boat direction
+                    if (CurrentControllerState == ControllerState.VR_Flap_Turn)
+                    {
+                        this.m_RigidBody.velocity = new Vector3(this.m_RigidBody.transform.forward.normalized.x * MinimumForwardSpeed, this.m_RigidBody.velocity.y, this.m_RigidBody.transform.forward.normalized.z * MinimumForwardSpeed);
+                    }
+
+                    // Minimum constant velocity in head direction
+                    else if (CurrentControllerState == ControllerState.VR_Head_Turn)
                     {
                         this.m_RigidBody.velocity = new Vector3(m_Camera.transform.forward.normalized.x * MinimumForwardSpeed, this.m_RigidBody.velocity.y, m_Camera.transform.forward.normalized.z * MinimumForwardSpeed);
                     }
                 }
-
-                // limit max speed
-                this.m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, MaxSpeed);
-
-
-                ParticleSystem.EmissionModule module = this.m_Particles.emission;
-                module.rateOverTime = MaxParticleCount * (this.m_RigidBody.velocity.magnitude / MaxSpeed);
-
-            }
-            else
-            {
-                // Move Forward with constant speed
-                this.m_RigidBody.MovePosition(transform.position +
-                                              m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
             }
         }
-
         public void ApplyLift()
         {
             this.m_RigidBody.useGravity = true;
-            this.m_RigidBody.AddForce(Vector3.up * this.MaxFlapForce, ForceMode.Impulse);
+            this.m_RigidBody.AddForce(Vector3.up * MaxFlapForce, ForceMode.Impulse);
         }
 
         public void RotateRight()
