@@ -981,8 +981,9 @@ MonoBehaviour:
   MinimumArmSwitchDistance: 0.2
   MinimumArmFlapDistance: 0.3
   CurrentControllerState: 1
-  ConstantForwardSpeed: 20
-  rotateValue: 500
+  MaxAngularFlapForce: 100
+  RotationalDrag: 10
+  MinimumDragForce: 1
   MinimumForwardSpeed: 0
   TriggerThreshold: 0.2
   MaxAcceleration: 1500
