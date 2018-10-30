@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 114756367266546706}
   - component: {fileID: 114973033603768294}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: FadeInCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1052,6 +1052,7 @@ MonoBehaviour:
   MaxAcceleration: 1500
   MaxSpeed: 25
   MaxParticleCount: 100
+  startMovement: 0
 --- !u!114 &114665225863062652
 MonoBehaviour:
   m_ObjectHideFlags: 1

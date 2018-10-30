@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using UnityEngine.SceneManagement;
 namespace Assets.Scripts.Managers
 {
     /// <summary>
@@ -10,7 +10,7 @@ namespace Assets.Scripts.Managers
     {
 
         public static GameManager Instance = null;
-
+        public GameObject player;
         public void Awake()
         {
             if (Instance == null)
@@ -34,6 +34,17 @@ namespace Assets.Scripts.Managers
         // Update is called once per frame
         void Update()
         {
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                if (SceneManager.GetActiveScene().name == "HiteshTestStartScene")
+                {
+                    Debug.Log("yeah you are");
+                    SceneManager.LoadScene("HiteshTestScene");
+                    player.GetComponent<Assets.Scripts.Entities.PlayerEntity>().startMovement = true;
+
+                }
+            }
+            
 
         }
     }
