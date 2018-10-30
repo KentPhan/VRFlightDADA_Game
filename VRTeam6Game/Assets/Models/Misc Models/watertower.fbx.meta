@@ -1,21 +1,20 @@
 fileFormatVersion: 2
-guid: 9f6c02b13e6cbaf4192152efdc22d3a2
+guid: ca67f72be54ae3942aeb6d8e3f1c74d4
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: lambert2
+    2100000: lambert1
     2300000: //RootNode
     3300000: //RootNode
-    4300000: truck
-    9500000: //RootNode
+    4300000: watertower
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: lambert2
-    second: {fileID: 2100000, guid: 5cb5ea7d4fe10f240a09725202c7024b, type: 2}
+      name: lambert1
+    second: {fileID: 2100000, guid: 214a4f380a1898e41962276edcc5b4a0, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -89,7 +88,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

@@ -447,7 +447,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1858359395186996}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0.0993898, z: -0, w: 0.9950486}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -456,7 +456,7 @@ Transform:
   - {fileID: 4518046930739850}
   m_Father: {fileID: 4819764328163950}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -11.408001, z: 0}
 --- !u!4 &4432676020434390
 Transform:
   m_ObjectHideFlags: 1
@@ -558,7 +558,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1694490181300186}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.95, y: 31, z: 99.76749}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4388738070743530}
@@ -981,8 +981,9 @@ MonoBehaviour:
   MinimumArmSwitchDistance: 0.2
   MinimumArmFlapDistance: 0.3
   CurrentControllerState: 1
-  ConstantForwardSpeed: 20
-  rotateValue: 500
+  MaxAngularFlapForce: 100
+  RotationalDrag: 10
+  MinimumDragForce: 1
   MinimumForwardSpeed: 0
   TriggerThreshold: 0.2
   MaxAcceleration: 1500
