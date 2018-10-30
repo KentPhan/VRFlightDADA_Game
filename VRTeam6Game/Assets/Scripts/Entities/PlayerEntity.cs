@@ -31,8 +31,17 @@ namespace Assets.Scripts.Entities
 
         public ControllerState CurrentControllerState = ControllerState.VR_Flap_Turn;
         [Header("VR Flap Turn")]
-        public float ConstantForwardSpeed = 10.0f;
-        public float rotateValue = 500f;
+
+        public float MaxAngularFlapForce = 10.0f;
+        public float RotationalDrag = 0.9f;
+        public float MinimumDragForce = 1.0f;
+
+
+        private Vector3 m_rotationalAcceleration;
+        private Vector3 m_rotationalVelocity;
+        private float MawShittyAngle;
+
+
 
         [Header("VR Head Turn")]
         public float MinimumForwardSpeed = 1.0f;
@@ -42,7 +51,10 @@ namespace Assets.Scripts.Entities
         public float MaxSpeed = 20.0f;
         public float MaxParticleCount = 100.0f;
 
-        [Header("VR Head Turn")]
+        // Rotation Detection
+        private Quaternion m_RotationalDestination;
+
+
         // Arm Detection
         private Vector3 m_AnchorPositionLeft;
         private Vector3 m_AnchorPositionRight;
@@ -59,7 +71,7 @@ namespace Assets.Scripts.Entities
 
         public void OnCollisionEnter()
         {
-            Debug.Log("I Collided;");
+
         }
 
         // Use this for initialization
@@ -85,15 +97,37 @@ namespace Assets.Scripts.Entities
             if (this.CurrentState == PlayerState.IN_UI)
             {
 
+
+                //Used for checking collision -Hitesh
+    
+                //this.m_RigidBody.MovePosition(transform.position + m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
+
                 //Used for checking collision - Hitesh
                 //this.m_RigidBody.MovePosition(transform.position +
                 //                                 m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
+
 
                 return;
             }
 
             DetectSwing();
             DetectAcceleration();
+
+
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                ApplyLift();
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                ApplyRotateRightAcceleration();
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                ApplyRotateLeftAcceleration();
+            }
+
+            DetectRotations();
 
             // limit max speed
             this.m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, MaxSpeed);
@@ -147,7 +181,7 @@ namespace Assets.Scripts.Entities
                 else if (m_LeftThresholdReached && !m_RightThresholdReached)
                 {
                     if (this.CurrentControllerState == ControllerState.VR_Flap_Turn)
-                        RotateLeft();
+                        ApplyRotateLeftAcceleration();
                     m_LeftThresholdReached = false;
                     m_AnchorPositionLeft = l_leftPosition;
                 }
@@ -155,7 +189,7 @@ namespace Assets.Scripts.Entities
                 else if (m_RightThresholdReached && !m_LeftThresholdReached)
                 {
                     if (this.CurrentControllerState == ControllerState.VR_Flap_Turn)
-                        RotateRight();
+                        ApplyRotateRightAcceleration();
                     m_RightThresholdReached = false;
                     m_AnchorPositionRight = l_rightPosition;
                 }
@@ -218,21 +252,96 @@ namespace Assets.Scripts.Entities
                 }
             }
         }
+
+        public void DetectRotations()
+        {
+            // apply drag to rotational acceleration
+            if (m_rotationalVelocity.y > 0)
+            {
+                float l_dragForce = -1 * (RotationalDrag * m_rotationalVelocity.y * m_rotationalVelocity.y);
+
+                l_dragForce = (l_dragForce > -1 * MinimumDragForce) ? -MinimumDragForce : l_dragForce;
+
+                // Apply force to Acceleration
+                m_rotationalAcceleration.y += l_dragForce * Time.deltaTime;
+
+                // apply acceleration to velocity
+                m_rotationalVelocity.y += (m_rotationalAcceleration.y * Time.deltaTime);
+
+                if (m_rotationalVelocity.y <= 0)
+                {
+                    Debug.Log("Hit 0 From right");
+                    m_rotationalVelocity.y = 0.0f;
+                    m_rotationalAcceleration.y = 0.0f;
+                }
+
+            }
+            else if (m_rotationalVelocity.y < 0)
+            {
+                float l_dragForce = -1 * (RotationalDrag * -1 * (m_rotationalVelocity.y * m_rotationalVelocity.y));
+
+                l_dragForce = (l_dragForce < MinimumDragForce) ? MinimumDragForce : l_dragForce;
+
+
+                // Apply force to Acceleration
+                m_rotationalAcceleration.y += l_dragForce * Time.deltaTime;
+
+                // apply acceleration to velocity
+                m_rotationalVelocity.y += (m_rotationalAcceleration.y * Time.deltaTime);
+
+
+                if (m_rotationalVelocity.y >= 0)
+                {
+                    Debug.Log("Hit 0 From left");
+                    m_rotationalVelocity.y = 0.0f;
+                    m_rotationalAcceleration.y = 0.0f;
+                }
+
+            }
+            else
+            {
+                // apply acceleration to velocity
+                m_rotationalVelocity.y += (m_rotationalAcceleration.y * Time.deltaTime);
+            }
+
+            transform.rotation = Quaternion.Euler(0.0f, transform.rotation.eulerAngles.y + (m_rotationalVelocity.y * Time.deltaTime), 0.0f);
+        }
+
+        public bool HandleRotationalAcceleration()
+        {
+            return false;
+        }
+
+
         public void ApplyLift()
         {
-            this.m_RigidBody.useGravity = true;
             this.m_RigidBody.AddForce(Vector3.up * MaxFlapForce, ForceMode.Impulse);
         }
 
-        public void RotateRight()
+        public void ApplyRotateRightAcceleration()
         {
-            transform.Rotate(0, rotateValue * Time.deltaTime, 0, Space.World);
+            Debug.Log("Accelerate Right Before:" + m_rotationalAcceleration.y);
+
+            m_rotationalAcceleration.y += MaxAngularFlapForce;
+            Debug.Log("Accelerate Right After :" + m_rotationalAcceleration.y);
+            //m_rotationalVelocity.y = degreeOrRotation;
+            //m_RotationalDestination = transform.rotation * Quaternion.Quaternion.Euler(0, degreeOrRotation, 0);
+            //transform.Rotate(0, rotateValue * Time.deltaTime, 0, Space.World);
         }
 
-        public void RotateLeft()
+        public void ApplyRotateLeftAcceleration()
         {
-            transform.Rotate(0, -1 * rotateValue * Time.deltaTime, 0, Space.World);
+            Debug.Log("Accelerate Left Before:" + m_rotationalAcceleration.y);
+
+            m_rotationalAcceleration.y -= MaxAngularFlapForce;
+            Debug.Log("Accelerate Left After :" + m_rotationalAcceleration.y);
+            //m_accelerateRotationLeft = true;
+            //m_rotationalVelocity. += degreeOrRotation;
+            //m_RotationalDestination = transform.rotation * Quaternion.Euler(0, -degreeOrRotation, 0);
+            //transform.Rotate(0, -1 * rotateValue * Time.deltaTime, 0, Space.World);
         }
+
+
 
         public void SwitchToUIState()
         {
@@ -244,6 +353,13 @@ namespace Assets.Scripts.Entities
         {
             this.m_Particles.gameObject.SetActive(true);
             this.m_RigidBody.useGravity = true;
+        }
+
+        public void setPosition(Vector3 lastCheckpointPosition)
+        {
+           // Debug.Log("changing position from "+ transform.position);
+            transform.position = lastCheckpointPosition;
+            //Debug.Log("changed position to " + transform.position);
         }
 
     }
