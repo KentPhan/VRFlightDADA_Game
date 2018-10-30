@@ -252,7 +252,7 @@ namespace Assets.Scripts.Entities
             // apply drag to rotational acceleration
             if (m_rotationalVelocity.y > 0)
             {
-                float l_dragForce = -1 * (RotationalDrag * m_rotationalVelocity.y);
+                float l_dragForce = -1 * (RotationalDrag * m_rotationalVelocity.y * m_rotationalVelocity.y);
 
                 l_dragForce = (l_dragForce > -1 * MinimumDragForce) ? -MinimumDragForce : l_dragForce;
 
@@ -272,7 +272,7 @@ namespace Assets.Scripts.Entities
             }
             else if (m_rotationalVelocity.y < 0)
             {
-                float l_dragForce = -1 * (RotationalDrag * m_rotationalVelocity.y);
+                float l_dragForce = -1 * (RotationalDrag * -1 * (m_rotationalVelocity.y * m_rotationalVelocity.y));
 
                 l_dragForce = (l_dragForce < MinimumDragForce) ? MinimumDragForce : l_dragForce;
 
