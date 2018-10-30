@@ -85,9 +85,9 @@ namespace Assets.Scripts.Entities
             if (this.CurrentState == PlayerState.IN_UI)
             {
 
-            //Used for checking collision - Hitesh
-            //this.m_RigidBody.MovePosition(transform.position +
-            //                                 m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
+                //Used for checking collision -Hitesh
+    
+                //this.m_RigidBody.MovePosition(transform.position + m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
 
                 return;
             }
@@ -265,6 +265,13 @@ namespace Assets.Scripts.Entities
         {
             this.m_Particles.gameObject.SetActive(true);
             this.m_RigidBody.useGravity = true;
+        }
+
+        public void setPosition(Vector3 lastCheckpointPosition)
+        {
+           // Debug.Log("changing position from "+ transform.position);
+            transform.position = lastCheckpointPosition;
+            //Debug.Log("changed position to " + transform.position);
         }
 
     }
