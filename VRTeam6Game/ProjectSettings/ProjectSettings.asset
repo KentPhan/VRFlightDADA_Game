@@ -564,14 +564,14 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: VRPaintFight
-  metroPackageVersion: 1.0.0.0
-  metroCertificatePath: Assets\WSATestCertificate.pfx
+  metroPackageName: FlapVRPackage
+  metroPackageVersion: 1.0.6.0
+  metroCertificatePath: Assets/WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: DefaultCompany
-  metroCertificateIssuer: DefaultCompany
-  metroCertificateNotAfter: 007a6f9b9784d501
-  metroApplicationDescription: VRPaintFight
+  metroCertificateSubject: FlapVR_TeamDBAB
+  metroCertificateIssuer: FlapVR_TeamDBAB
+  metroCertificateNotAfter: 80ca02b8de8fd501
+  metroApplicationDescription: FlapFlap
   wsaImages: {}
   metroTileShortName: VRPaintFight
   metroCommandLineArgsFile: 
@@ -611,7 +611,7 @@ PlayerSettings:
       UserAccountInformation: False
       VideosLibrary: False
       VoipCall: False
-      WebCam: False
+      WebCam: True
   metroFTAName: 
   metroFTAFileTypes: []
   metroProtocolName: 
