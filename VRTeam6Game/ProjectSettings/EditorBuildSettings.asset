@@ -8,3 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FinalScenes/ExplorationScene.unity
     guid: d03e5f92f89b66c4da11fe51d17e43fc
+  - enabled: 1
+    path: Assets/Scenes/TestScenes/HiteshTestStartScene.unity
+    guid: 66df42ed470dbdc41839cba5d28b68a4
+  - enabled: 1
+    path: Assets/Scenes/TestScenes/HiteshTestScene.unity
+    guid: 872bcc6cf1495264bb913a369caadea3

@@ -68,6 +68,10 @@ namespace Assets.Scripts.Entities
         private Camera m_Camera;
         private ParticleSystem m_Particles;
 
+        //Test Variables - Hitesh
+        public bool startMovement = false;
+        private float ConstantForwardSpeed = 10f;
+       
 
         public void OnCollisionEnter()
         {
@@ -99,8 +103,8 @@ namespace Assets.Scripts.Entities
 
 
                 //Used for checking collision -Hitesh
-    
-                //this.m_RigidBody.MovePosition(transform.position + m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
+                if(startMovement)
+                    this.m_RigidBody.MovePosition(transform.position + m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
 
                 //Used for checking collision - Hitesh
                 //this.m_RigidBody.MovePosition(transform.position +
