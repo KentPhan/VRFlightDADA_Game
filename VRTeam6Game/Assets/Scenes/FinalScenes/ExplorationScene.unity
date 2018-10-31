@@ -56539,7 +56539,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1864061435}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &1393234814
 AudioSource:
@@ -58211,6 +58211,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1446396716}
   - component: {fileID: 1446396717}
+  - component: {fileID: 1446396718}
   m_Layer: 0
   m_Name: WindAmbience
   m_TagString: Untagged
@@ -58229,7 +58230,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1864061435}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &1446396717
 AudioSource:
@@ -58240,11 +58241,11 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: e14929d8e20a9914cb0faaffec072e27, type: 3}
+  m_audioClip: {fileID: 8300000, guid: d94be6d66ec9916448be2430dc94edda, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.25
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -58311,6 +58312,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &1446396718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1446396715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 493200ffa8d30f94ba2eec5cd1d986e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1447433358
 Prefab:
   m_ObjectHideFlags: 0
@@ -74089,34 +74101,6 @@ Transform:
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: 9e0f04c49b2ae1a45940309670e1b17d, type: 3}
   m_PrefabInternal: {fileID: 1286367701}
---- !u!1 &1850491209
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1850491210}
-  m_Layer: 0
-  m_Name: Wind
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1850491210
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1850491209}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1864061435}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1850732020
 GameObject:
   m_ObjectHideFlags: 0
@@ -74685,7 +74669,6 @@ Transform:
   - {fileID: 1890070663}
   - {fileID: 1739177547}
   - {fileID: 874280133}
-  - {fileID: 1850491210}
   - {fileID: 1446396716}
   - {fileID: 1393234813}
   m_Father: {fileID: 0}
