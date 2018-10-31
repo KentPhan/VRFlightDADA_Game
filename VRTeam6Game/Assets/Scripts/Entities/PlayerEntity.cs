@@ -71,11 +71,16 @@ namespace Assets.Scripts.Entities
         //Test Variables - Hitesh
         public bool startMovement = false;
         private float ConstantForwardSpeed = 10f;
-       
+
 
         public void OnCollisionEnter()
         {
+            this.m_RigidBody.angularVelocity = Vector3.zero;
+        }
 
+        public void OnCollisionStay()
+        {
+            this.m_RigidBody.angularVelocity = Vector3.zero;
         }
 
         // Use this for initialization
@@ -103,7 +108,7 @@ namespace Assets.Scripts.Entities
 
 
                 //Used for checking collision -Hitesh
-                if(startMovement)
+                if (startMovement)
                     this.m_RigidBody.MovePosition(transform.position + m_Camera.transform.forward * ConstantForwardSpeed * Time.deltaTime);
 
                 //Used for checking collision - Hitesh
@@ -361,7 +366,7 @@ namespace Assets.Scripts.Entities
 
         public void setPosition(Vector3 lastCheckpointPosition)
         {
-           // Debug.Log("changing position from "+ transform.position);
+            // Debug.Log("changing position from "+ transform.position);
             transform.position = lastCheckpointPosition;
             //Debug.Log("changed position to " + transform.position);
         }
