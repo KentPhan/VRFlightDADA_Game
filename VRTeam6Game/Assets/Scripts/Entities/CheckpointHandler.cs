@@ -19,10 +19,7 @@ public class CheckpointHandler : MonoBehaviour {
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.R))
-        {
-            resetToLastCheckpoint();
-        }
+       
     }
 
     void setFirstCheckpoint()
@@ -60,27 +57,15 @@ public class CheckpointHandler : MonoBehaviour {
         Debug.Log("I guess u reached the end");
     }
 
-    public void resetToLastCheckpoint()
-    {
-        setScreenFade();
+    //public void resetToLastCheckpoint()
+    //{
+    //    setScreenFade();
        
-        setPlayerPosition();
+    //    setPlayerPosition();
 
-    }
+    //}
 
-    void setScreenFade()
-    {
-        var tempcolor = fadeInImage.color;
-        tempcolor.a = 0.01f;
-        fadeInImage.color = tempcolor;
-        
-        fadeInImage.CrossFadeAlpha(255f, 1f, false);
-        Invoke("stopScreenFade", 1f);
-    }
-    void stopScreenFade()
-    {
-        fadeInImage.CrossFadeAlpha(0f, 1f, false);
-    }
+   
 
     void setPlayerPosition()
     {
