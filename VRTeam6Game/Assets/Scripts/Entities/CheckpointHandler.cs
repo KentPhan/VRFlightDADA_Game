@@ -6,15 +6,17 @@ using UnityEngine.UI;
 public class CheckpointHandler : MonoBehaviour {
     public List<GameObject> listOfCheckpoints = new List<GameObject>();
    
-    public Image fadeInImage;
-    public GameObject player;
+   
 
     private int currentCheckpointIndex = 0;
     private Vector3 playerStartPosition;
+
+    
 	// Use this for initialization
 	void Start () {
+        
         setFirstCheckpoint();
-        playerStartPosition = player.transform.position;
+        
 	}
 
     private void Update()
@@ -67,14 +69,6 @@ public class CheckpointHandler : MonoBehaviour {
 
    
 
-    void setPlayerPosition()
-    {
-        if (currentCheckpointIndex != 0)
-            player.transform.GetComponent<Assets.Scripts.Entities.PlayerEntity>().setPosition(listOfCheckpoints[currentCheckpointIndex].transform.localPosition);
-        else
-            player.transform.GetComponent<Assets.Scripts.Entities.PlayerEntity>().setPosition(playerStartPosition);
-
-
-    }
+   
 
 }

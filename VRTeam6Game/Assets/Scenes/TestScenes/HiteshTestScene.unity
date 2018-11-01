@@ -449,6 +449,53 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 140048290}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &144558830
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4819764328163950, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 2.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819764328163950, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 55.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819764328163950, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 99.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819764328163950, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819764328163950, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819764328163950, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819764328163950, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4819764328163950, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce, type: 2}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114597760094621634, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce,
+        type: 2}
+      propertyPath: CurrentState
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 8cf617654a3e62c4a83eb4a7bf9dc4ce, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &186964011
 GameObject:
   m_ObjectHideFlags: 0
@@ -661,8 +708,6 @@ MonoBehaviour:
   - {fileID: 829649068}
   - {fileID: 278606758}
   - {fileID: 1971678203}
-  fadeInImage: {fileID: 0}
-  player: {fileID: 0}
 --- !u!4 &343369814
 Transform:
   m_ObjectHideFlags: 0

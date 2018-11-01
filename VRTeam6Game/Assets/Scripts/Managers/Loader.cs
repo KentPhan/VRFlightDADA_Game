@@ -25,10 +25,10 @@ namespace Assets.Scripts.Managers
                 Instantiate(soundManager);
             }
 
-            if (UIManager.Instance == null)
-            {
-                Instantiate(uIManager);
-            }
+            //if (UIManager.Instance == null)
+            //{
+            //    Instantiate(uIManager);
+            //}
         }
     }
 }

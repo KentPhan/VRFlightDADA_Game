@@ -23,7 +23,8 @@ namespace Assets.Scripts.Managers
             }
 
             DontDestroyOnLoad(gameObject);
-            //fadeInImage = player
+
+            fadeInImage = player.GetComponentInChildren<Image>();
         }
 
 
@@ -36,37 +37,30 @@ namespace Assets.Scripts.Managers
         // Update is called once per frame
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Return))
-            {
-                if (SceneManager.GetActiveScene().name == "HiteshTestStartScene")
-                {
-                    Debug.Log("yeah you are");
-                    SceneManager.LoadScene("HiteshTestScene");
-                    //player.GetComponent<Assets.Scripts.Entities.PlayerEntity>().startMovement = true;
-
-                }
-                else if(SceneManager.GetActiveScene().name == "HiteshTestScene")
-                {
-                    SceneManager.LoadScene("HiteshTestStartScene");
-
-                }
-            }
+            
             
 
         }
-        void setScreenFade()
+        public void changeScene()
         {
-            var tempcolor = fadeInImage.color;
-            tempcolor.a = 0.01f;
-            fadeInImage.color = tempcolor;
+            
+                if (SceneManager.GetActiveScene().name == "Intro")
+                {
+                    Debug.Log("yeah you are");
+                    //fadeInImage.GetComponent<FadeScript>().setScreenFade();
+                    SceneManager.LoadScene("ExplorationScene");
+                    //player.GetComponent<Assets.Scripts.Entities.PlayerEntity>().startMovement = true;
 
-            fadeInImage.CrossFadeAlpha(255f, 1f, false);
-            Invoke("stopScreenFade", 1f);
+                }
+                else if (SceneManager.GetActiveScene().name == "ExplorationScene")
+                {
+                    //fadeInImage.GetComponent<FadeScript>().setScreenFade();
+                    SceneManager.LoadScene("Intro");
+
+                }
+            
         }
-        void stopScreenFade()
-        {
-            fadeInImage.CrossFadeAlpha(0f, 1f, false);
-        }
+        
     }
 }
 
